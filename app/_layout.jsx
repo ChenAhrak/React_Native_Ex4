@@ -12,10 +12,10 @@ export default function RootLayout() {
         fontWeight: 'bold',
       },
     }}>
-      <Stack.Screen name="MainScreen" />
-      <Stack.Screen name="TaskList" />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="Screens/TaskList" />{/*This is the TaskList screen*/}
       {/* <Stack.Screen name="pageWOHeader" options={{ headerShown: false }} /> */}
-     
+
     </Stack>
   )
 }
