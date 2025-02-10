@@ -1,11 +1,27 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { styles } from './Styles/MainScreen.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MainScreen() {
-  const [totalTasks, setTotalTasks] = React.useState(0);
+  const [totalTasks, setTotalTasks] = useState(0);
   const router = useRouter();
+useEffect(() => 
+  {
+    const loadTasks = async () => {
+      try {
+        const savedTasks = await AsyncStorage.getItem('tasks');
+        if (savedTasks !== null) {
+          setTotalTasks(JSON.parse(savedTasks).length);
+        }
+      } catch (error) {
+        console.error('Failed to load tasks:', error);
+      }
+    };
+    loadTasks();
+  }, [totalTasks]);
+  
   return (
     <View style={styles.container}>
       {/* Header Section */}
@@ -23,10 +39,10 @@ export default function MainScreen() {
           onPress={() => router.push("/Screens/TaskList")}
         />
         <View style={styles.buttonSpacing} />
-        {/* <Button
+        <Button
           title="Add Task"
-          onPress={() => router.push('./AddTask')}
-        /> */}
+          onPress={() => router.push('/Screens/AddEditTask')}
+        />
       </View>
     </View>
   );

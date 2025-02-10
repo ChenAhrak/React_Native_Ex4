@@ -1,19 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/TaskList.js';
 
 export default function TaskList() {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState('');
 
+    // Load tasks from AsyncStorage when the component mounts
+    useEffect(() => {
+        loadTasks();
+    }, []);
+
+    // Save tasks to AsyncStorage whenever they change
+    useEffect(() => {
+        saveTasks();
+    }, [tasks]);
+
+    // Function to load tasks from AsyncStorage
+    const loadTasks = async () => {
+        try {
+            const savedTasks = await AsyncStorage.getItem('tasks');
+            if (savedTasks !== null) {
+                setTasks(JSON.parse(savedTasks));
+            }
+        } catch (error) {
+            console.error('Failed to load tasks:', error);
+        }
+    };
+
+    // Function to save tasks to AsyncStorage
+    const saveTasks = async () => {
+        try {
+            await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+        } catch (error) {
+            console.error('Failed to save tasks:', error);
+        }
+    };
+
     const addTask = () => {
         if (newTask.trim() === '') return;
-        setTasks([...tasks, { id: Date.now().toString(), text: newTask }]);
+        const updatedTasks = [...tasks, { id: Date.now().toString(), text: newTask }];
+        setTasks(updatedTasks);
         setNewTask('');
     };
 
     const deleteTask = (id) => {
-        setTasks(tasks.filter((task) => task.id !== id));
+        Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                onPress: () => {
+                    const updatedTasks = tasks.filter((task) => task.id !== id);
+                    setTasks(updatedTasks);
+                },
+                style: 'destructive',
+            },
+        ]);
     };
 
     return (
@@ -45,5 +88,3 @@ export default function TaskList() {
         </View>
     );
 }
-
-
