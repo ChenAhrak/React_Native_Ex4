@@ -13,7 +13,7 @@ export default function RootLayout() {
       },
     }}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="Screens/TaskList" />{/*This is the TaskList screen*/}
+      <Stack.Screen name="Screens/TaskList" options={{title:'Task List'}}  />{/*This is the TaskList screen*/}
       {/* <Stack.Screen name="pageWOHeader" options={{ headerShown: false }} /> */}
 
     </Stack>
