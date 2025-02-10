@@ -20,7 +20,7 @@ export default function MainScreen() {
             <View style={styles.buttonContainer}>
                 <Button
                     title="View Tasks"
-                    onPress={() => router.push('./TaskList')}
+                    onPress={() => router.push('/Screens/TaskList')}
                 />
                 <View style={styles.buttonSpacing} />
                 <Button
