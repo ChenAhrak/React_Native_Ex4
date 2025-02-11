@@ -4,10 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/TaskList.js';
 import { useRouter } from 'expo-router';
 
-export default function TaskList() {
+export default function AddEditTasks() {
     const [tasks, setTasks] = useState([]);
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
+    const [editingTaskId, setEditingTaskId] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -37,35 +38,46 @@ export default function TaskList() {
         }
     };
 
-    const addTask = () => {
+    // Add or Update Task
+    const handleSaveTask = () => {
         if (taskTitle.trim() === '') return;
-        const updatedTasks = [...tasks, { 
-            id: Date.now().toString(), 
-            title: taskTitle, 
-            description: taskDescription 
-        }];
-        setTasks(updatedTasks);
+
+        if (editingTaskId) {
+            // Update existing task
+            const updatedTasks = tasks.map(task =>
+                task.id === editingTaskId ? { ...task, title: taskTitle, description: taskDescription } : task
+            );
+            setTasks(updatedTasks);
+            setEditingTaskId(null);
+        } else {
+            // Add new task
+            const newTask = { id: Date.now().toString(), title: taskTitle, description: taskDescription };
+            setTasks([...tasks, newTask]);
+        }
+
         setTaskTitle('');
         setTaskDescription('');
     };
 
+    // Edit Task
+    const editTask = (task) => {
+        setTaskTitle(task.title);
+        setTaskDescription(task.description);
+        setEditingTaskId(task.id);
+    };
+
+    // Delete Task
     const deleteTask = (id) => {
         Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
             { text: 'Cancel', style: 'cancel' },
             {
                 text: 'Delete',
                 onPress: () => {
-                    const updatedTasks = tasks.filter((task) => task.id !== id);
-                    setTasks(updatedTasks);
+                    setTasks(tasks.filter((task) => task.id !== id));
                 },
                 style: 'destructive',
             },
         ]);
-    };
-
-    // alert of task details not used
-    const showTaskDetails = (task) => {
-        Alert.alert(task.title, task.description || 'No description provided.');
     };
 
     return (
@@ -76,7 +88,7 @@ export default function TaskList() {
                 data={tasks}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity  onPress={() =>
+                    <TouchableOpacity onPress={() =>
                         router.push({
                             pathname: '/Screens/TaskDetails',
                             params: { title: item.title, description: item.description || '' },
@@ -84,9 +96,14 @@ export default function TaskList() {
                     }>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.title}</Text>
-                            <TouchableOpacity onPress={() => deleteTask(item.id)}>
-                                <Text style={styles.deleteButton}>Delete</Text>
-                            </TouchableOpacity>
+                            <View style={styles.buttonGroup}>
+                                <TouchableOpacity onPress={() => editTask(item)}>
+                                    <Text style={styles.editButton}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => deleteTask(item.id)}>
+                                    <Text style={styles.deleteButton}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 )}
@@ -99,7 +116,6 @@ export default function TaskList() {
                     value={taskTitle}
                     onChangeText={setTaskTitle}
                     multiline
-                    
                 />
                 <TextInput
                     style={[styles.input, { height: 80 }]}
@@ -108,7 +124,7 @@ export default function TaskList() {
                     onChangeText={setTaskDescription}
                     multiline
                 />
-                <Button title="Add" onPress={addTask} />
+                <Button title={editingTaskId ? "Update Task" : "Add Task"} onPress={handleSaveTask} />
             </View>
         </View>
     );
