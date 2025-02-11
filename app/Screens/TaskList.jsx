@@ -1,89 +1,90 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styles } from '../Styles/TaskList.js';
 
 export default function TaskList() {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
+    const [tasks, setTasks] = useState([]);
+    const [newTask, setNewTask] = useState('');
 
-  const addTask = () => {
-    if (newTask.trim() === '') return;
-    setTasks([...tasks, { id: Date.now().toString(), text: newTask }]);
-    setNewTask('');
-  };
+    // Load tasks from AsyncStorage when the component mounts
+    useEffect(() => {
+        loadTasks();
+    }, []);
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
+    // Save tasks to AsyncStorage whenever they change
+    useEffect(() => {
+        saveTasks();
+    }, [tasks]);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Task List</Text>
+    // Function to load tasks from AsyncStorage
+    const loadTasks = async () => {
+        try {
+            const savedTasks = await AsyncStorage.getItem('tasks');
+            if (savedTasks !== null) {
+                setTasks(JSON.parse(savedTasks));
+            }
+        } catch (error) {
+            console.error('Failed to load tasks:', error);
+        }
+    };
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.taskItem}>
-            <Text style={styles.taskText}>{item.text}</Text>
-            <TouchableOpacity onPress={() => deleteTask(item.id)}>
-              <Text style={styles.deleteButton}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+    // Function to save tasks to AsyncStorage
+    const saveTasks = async () => {
+        try {
+            await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+        } catch (error) {
+            console.error('Failed to save tasks:', error);
+        }
+    };
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add a new task"
-          value={newTask}
-          onChangeText={setNewTask}
-        />
-        <Button title="Add" onPress={addTask} />
-      </View>
-    </View>
-  );
+    const addTask = () => {
+        if (newTask.trim() === '') return;
+        const updatedTasks = [...tasks, { id: Date.now().toString(), text: newTask }];
+        setTasks(updatedTasks);
+        setNewTask('');
+    };
+
+    const deleteTask = (id) => {
+        Alert.alert('Delete Task', 'Are you sure you want to delete this task?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete',
+                onPress: () => {
+                    const updatedTasks = tasks.filter((task) => task.id !== id);
+                    setTasks(updatedTasks);
+                },
+                style: 'destructive',
+            },
+        ]);
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.header}>Task List</Text>
+
+            <FlatList
+                data={tasks}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <View style={styles.taskItem}>
+                        <Text style={styles.taskText}>{item.text}</Text>
+                        <TouchableOpacity onPress={() => deleteTask(item.id)}>
+                            <Text style={styles.deleteButton}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            />
+
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Add a new task"
+                    value={newTask}
+                    onChangeText={setNewTask}
+                />
+                <Button title="Add" onPress={addTask} />
+            </View>
+        </View>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  taskItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    elevation: 2,
-  },
-  taskText: {
-    fontSize: 16,
-  },
-  deleteButton: {
-    color: 'red',
-    fontWeight: 'bold',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-  },
-});
