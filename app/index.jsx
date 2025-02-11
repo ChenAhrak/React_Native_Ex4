@@ -40,7 +40,7 @@ useEffect(() =>
         />
         <View style={styles.buttonSpacing} />
         <Button
-          title="Add Task"
+          title="Add/Edit Task"
           onPress={() => router.push('/Screens/AddEditTask')}
         />
       </View>
