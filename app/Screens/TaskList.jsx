@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/TaskList.js';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function TaskList() {
     const [tasks, setTasks] = useState([]);
@@ -39,11 +40,14 @@ export default function TaskList() {
 
     const addTask = () => {
         if (taskTitle.trim() === '') return;
-        const updatedTasks = [...tasks, { 
-            id: Date.now().toString(), 
-            title: taskTitle, 
-            description: taskDescription 
-        }];
+        const updatedTasks = [
+            ...tasks,
+            { 
+                id: Date.now().toString(), 
+                title: taskTitle, 
+                description: taskDescription 
+            }
+        ];
         setTasks(updatedTasks);
         setTaskTitle('');
         setTaskDescription('');
@@ -63,35 +67,15 @@ export default function TaskList() {
         ]);
     };
 
-    // alert of task details not used
-    const showTaskDetails = (task) => {
-        Alert.alert(task.title, task.description || 'No description provided.');
-    };
-
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={[styles.container, { flex: 1 }]}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+        >
             <Text style={styles.header}>Task List</Text>
-
-            <FlatList
-                data={tasks}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity  onPress={() =>
-                        router.push({
-                            pathname: '/Screens/TaskDetails',
-                            params: { title: item.title, description: item.description || '' },
-                        })
-                    }>
-                        <View style={styles.taskItem}>
-                            <Text style={styles.taskText}>{item.title}</Text>
-                            <TouchableOpacity onPress={() => deleteTask(item.id)}>
-                                <Text style={styles.deleteButton}>Delete</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </TouchableOpacity>
-                )}
-            />
-
+            
+            {/* תיבת הקלט */}
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -99,7 +83,6 @@ export default function TaskList() {
                     value={taskTitle}
                     onChangeText={setTaskTitle}
                     multiline
-                    
                 />
                 <TextInput
                     style={[styles.input, { height: 80 }]}
@@ -110,6 +93,28 @@ export default function TaskList() {
                 />
                 <Button title="Add" onPress={addTask} />
             </View>
-        </View>
+
+            {/* רשימת המשימות */}
+            <FlatList
+                style={{ flex: 1 }}
+                data={tasks}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() =>
+                        router.push({
+                            pathname: '/Screens/TaskDetails',
+                            params: { title: item.title, description: item.description || '' },
+                        })
+                    }>
+                        <View style={styles.taskItem}>
+                            <Text style={styles.taskText}>{item.title}</Text>
+                            <TouchableOpacity onPress={() => deleteTask(item.id)}>
+                                <MaterialIcons name="delete" size={24} color="red" />
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
+                )}
+            />
+        </KeyboardAvoidingView>
     );
 }

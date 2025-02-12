@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { View, Text, Button } from 'react-native';
-import { styles } from './Styles/MainScreen.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCallback } from 'react';
+import { styles } from './Styles/MainScreen.js';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function MainScreen() {
   const [totalTasks, setTotalTasks] = useState(0);
@@ -32,6 +32,15 @@ export default function MainScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Task Manager</Text>
+      
+      {/* אייקון של מחברת משימות */}
+      <MaterialCommunityIcons 
+        name="notebook-outline" 
+        size={80} 
+        color="black" 
+        style={{ alignSelf: 'center', marginVertical: 10 }} 
+      />
+      
       <View style={styles.infoBox}>
         <Text style={styles.infoText}>Total Tasks: {totalTasks}</Text>
       </View>

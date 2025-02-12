@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/TaskList.js';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function AddEditTasks() {
     const [tasks, setTasks] = useState([]);
@@ -84,31 +85,7 @@ export default function AddEditTasks() {
         <View style={styles.container}>
             <Text style={styles.header}>Task List</Text>
 
-            <FlatList
-                data={tasks}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() =>
-                        router.push({
-                            pathname: '/Screens/TaskDetails',
-                            params: { title: item.title, description: item.description || '' },
-                        })
-                    }>
-                        <View style={styles.taskItem}>
-                            <Text style={styles.taskText}>{item.title}</Text>
-                            <View style={styles.buttonGroup}>
-                                <TouchableOpacity onPress={() => editTask(item)}>
-                                    <Text style={styles.editButton}>Edit</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => deleteTask(item.id)}>
-                                    <Text style={styles.deleteButton}>Delete</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                )}
-            />
-
+            {/* תיבת הקלט מוצגת למעלה */}
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -126,6 +103,32 @@ export default function AddEditTasks() {
                 />
                 <Button title={editingTaskId ? "Update Task" : "Add Task"} onPress={handleSaveTask} />
             </View>
+
+            {/* רשימת המשימות מוצגת מתחת */}
+            <FlatList
+                data={tasks}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() =>
+                        router.push({
+                            pathname: '/Screens/TaskDetails',
+                            params: { title: item.title, description: item.description || '' },
+                        })
+                    }>
+                        <View style={styles.taskItem}>
+                            <Text style={styles.taskText}>{item.title}</Text>
+                            <View style={styles.buttonGroup}>
+                                <TouchableOpacity onPress={() => editTask(item)}>
+                                    <MaterialIcons name="edit" size={24} color="blue" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => deleteTask(item.id)}>
+                                    <MaterialIcons name="delete" size={24} color="red" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                )}
+            />
         </View>
     );
 }
