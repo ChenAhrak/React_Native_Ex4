@@ -15,6 +15,7 @@ export default function TaskList() {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const router = useRouter();
+    const [showInputFields, setShowInputFields] = useState(false);
 
     useEffect(() => {
         loadTasks();
@@ -50,7 +51,8 @@ export default function TaskList() {
             { 
                 id: Date.now().toString(), 
                 title: taskTitle, 
-                description: taskDescription 
+                description: taskDescription, 
+                dueDate: dueDate
             }
         ];
         setTasks(updatedTasks);
@@ -72,6 +74,10 @@ export default function TaskList() {
         ]);
     };
 
+    const formatDate = (date) => {
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
         <KeyboardAvoidingView
             style={[styles.container, { flex: 1 }]}
@@ -79,8 +85,14 @@ export default function TaskList() {
             keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
         >
             <Text style={styles.header}>Task List</Text>
-            
-            {/* תיבת הקלט */}
+            <View style={styles.buttonContainer}>
+                <Button title={showInputFields ? "Hide input fields" : "New Task"}
+                onPress={() => setShowInputFields(!showInputFields)} 
+                style={styles.toggleButton} />
+            </View>
+
+
+        {showInputFields && (
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -96,12 +108,59 @@ export default function TaskList() {
                     onChangeText={setTaskDescription}
                     multiline
                 />
+                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
+                    <Text style={styles.dateText}>Due: {formatDate(dueDate)}</Text>
+                    <Ionicons name="calendar" size={24} color="black" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={dueDate}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            setShowDatePicker(false);
+                            if (selectedDate) {
+                                setDueDate(selectedDate);
+                                setShowTimePicker(true);
+                            }
+                        }}
+                    />
+                )}
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={dueDate}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            setShowDatePicker(false);
+                            if (selectedDate) {
+                                setDueDate(selectedDate);
+                                setShowTimePicker(true);
+                            }
+                        }}
+                    />
+                )}
+
+                {showTimePicker && (
+                    <DateTimePicker
+                        value={dueDate}
+                        mode="time"
+                        display="default"
+                        onChange={(event, selectedTime) => {
+                            setShowTimePicker(false);
+                            if (selectedTime) {
+                                setDueDate(selectedTime);
+                            }
+                        }}
+                    />
+                )}
                 <View style={styles.buttonContainer}>
                     <Button title="Add" onPress={addTask} />
                 </View>
             </View>
-
-            {/* רשימת המשימות */}
+            )}
             <FlatList
                 style={{ flex: 1 }}
                 data={tasks}
@@ -115,6 +174,7 @@ export default function TaskList() {
                     }>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.title}</Text>
+                            <Text style={styles.taskDate}>Due: {formatDate(new Date(item.dueDate))}</Text>
                             <TouchableOpacity onPress={() => deleteTask(item.id)}>
                                 <MaterialIcons name="delete" size={24} color="red" />
                             </TouchableOpacity>

@@ -26,6 +26,7 @@ export const styles = StyleSheet.create({
     },
     buttonContainer:{
       alignSelf: 'center',
+      marginBottom: 10,
     },
     deleteButton: {
       color: 'red',
@@ -54,5 +55,16 @@ export const styles = StyleSheet.create({
       padding: 10,
       marginRight: 10,
       marginBottom: 10,
+    },
+    dateContainer:{
+      flexDirection: 'row',
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 50,
+      marginBottom: 10,
+    },
+    dateText: {
+      marginRight: 10,
+      fontSize: 16,
     },
   });
