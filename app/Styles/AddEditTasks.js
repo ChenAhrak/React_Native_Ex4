@@ -18,6 +18,8 @@ export const styles = StyleSheet.create({
       padding: 10,
       marginVertical: 5,
       backgroundColor: '#fff',
+      borderColor: '#ddd',
+      borderWidth: 2,
       borderRadius: 5,
       elevation: 2,
       width: '100%',

@@ -89,9 +89,30 @@ export default function AddEditTasks() {
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
+    const getBorderColor = (dueDateString) => {
+        if (!dueDateString) {
+            return '#ddd';
+        }
+
+        const dueDate = new Date(dueDateString);
+        const now = new Date();
+
+        const isOverdue = dueDate < now;
+        const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+
+        let newBorderColor = 'lightgreen';
+        if (isOverdue) {
+            newBorderColor = '#FF474D';
+        } else if (diffDays <= 1) {
+            newBorderColor = 'yellow';
+        }
+
+        return newBorderColor;
+    };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Task List</Text>
+            <Text style={styles.header}>Add / Edit Tasks</Text>
 
             {/* תיבת הקלט מוצגת למעלה */}
             <View style={styles.inputContainer}>
@@ -151,14 +172,17 @@ export default function AddEditTasks() {
             <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
+                
+                renderItem={({ item }) => {
+                    const borderColor = getBorderColor(item.dueDate);
+                    return (
                     <TouchableOpacity onPress={() =>
                         router.push({
                             pathname: '/Screens/TaskDetails',
                             params: { title: item.title, description: item.description || '', dueDate: item.dueDate || '' },
                         })
                     }>
-                        <View style={styles.taskItem}>
+                        <View style={[styles.taskItem, { borderColor }]}>
                             <Text style={styles.taskText}>{item.title}</Text>
                             <Text style={styles.taskDate}>Due: {formatDate(new Date(item.dueDate))}</Text>
                             <View style={styles.buttonGroup}>
@@ -171,7 +195,8 @@ export default function AddEditTasks() {
                             </View>
                         </View>
                     </TouchableOpacity>
-                )}
+                );
+                }}
             />
         </View>
     );

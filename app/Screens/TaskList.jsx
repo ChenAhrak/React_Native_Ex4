@@ -78,6 +78,27 @@ export default function TaskList() {
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
+    const getBorderColor = (dueDateString) => {
+        if (!dueDateString) {
+            return '#ddd';
+        }
+
+        const dueDate = new Date(dueDateString);
+        const now = new Date();
+
+        const isOverdue = dueDate < now;
+        const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+
+        let newBorderColor = 'lightgreen';
+        if (isOverdue) {
+            newBorderColor = '#FF474D';
+        } else if (diffDays <= 1) {
+            newBorderColor = 'yellow';
+        }
+
+        return newBorderColor;
+    };
+
     return (
         <KeyboardAvoidingView
             style={[styles.container, { flex: 1 }]}
@@ -165,14 +186,16 @@ export default function TaskList() {
                 style={{ flex: 1 }}
                 data={tasks}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
+                renderItem={({ item }) => {
+                    const borderColor = getBorderColor(item.dueDate);
+                    return(
                     <TouchableOpacity onPress={() =>
                         router.push({
                             pathname: '/Screens/TaskDetails',
                             params: { title: item.title, description: item.description || '', dueDate: item.dueDate || '' },
                         })
                     }>
-                        <View style={styles.taskItem}>
+                        <View style={[styles.taskItem, {borderColor}]}>
                             <Text style={styles.taskText}>{item.title}</Text>
                             <Text style={styles.taskDate}>Due: {formatDate(new Date(item.dueDate))}</Text>
                             <TouchableOpacity onPress={() => deleteTask(item.id)}>
@@ -180,8 +203,10 @@ export default function TaskList() {
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
-                )}
+                    );
+            }}
             />
+
         </KeyboardAvoidingView>
     );
 }
