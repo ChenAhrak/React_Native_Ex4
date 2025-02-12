@@ -3,12 +3,17 @@ import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Keybo
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/TaskList.js';
 import { useRouter } from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function TaskList() {
     const [tasks, setTasks] = useState([]);
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
+    const [dueDate, setDueDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -85,14 +90,15 @@ export default function TaskList() {
                     multiline
                 />
                 <TextInput
-                    style={[styles.input, { height: 80 }]}
+                    style={styles.inputDescription}
                     placeholder="Task Description"
                     value={taskDescription}
                     onChangeText={setTaskDescription}
                     multiline
                 />
-                
-                <Button title="Add" onPress={addTask} />
+                <View style={styles.buttonContainer}>
+                    <Button title="Add" onPress={addTask} />
+                </View>
             </View>
 
             {/* רשימת המשימות */}
@@ -104,7 +110,7 @@ export default function TaskList() {
                     <TouchableOpacity onPress={() =>
                         router.push({
                             pathname: '/Screens/TaskDetails',
-                            params: { title: item.title, description: item.description || '' },
+                            params: { title: item.title, description: item.description || '', dueDate: item.dueDate || '' },
                         })
                     }>
                         <View style={styles.taskItem}>

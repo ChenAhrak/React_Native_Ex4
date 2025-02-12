@@ -24,23 +24,35 @@ export const styles = StyleSheet.create({
     taskText: {
       fontSize: 16,
     },
+    buttonContainer:{
+      alignSelf: 'center',
+    },
     deleteButton: {
       color: 'red',
       fontWeight: 'bold',
     },
     inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column',
+      alignItems: 'stretch',
       marginTop: 20,
       marginBottom: 20,
     },
-
-    input: {
-      flex: 1,
+    inputDescription: {
+      textAlignVertical: 'top',
+      height: 80,
       borderWidth: 1,
       borderColor: '#ddd',
       borderRadius: 5,
       padding: 10,
       marginRight: 10,
+      marginBottom: 10,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 10,
+      marginBottom: 10,
     },
   });

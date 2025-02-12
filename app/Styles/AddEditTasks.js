@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 5,
       elevation: 2,
-      width: '90%',
+      width: '100%',
       alignSelf: 'center',
     },
     taskText: {
@@ -52,10 +52,25 @@ export const styles = StyleSheet.create({
       marginRight: 10,
       marginBottom: 10,
     },
+    inputDescription: {
+      textAlignVertical: 'top',
+      height: 80,
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 10,
+      marginBottom: 10,
+    },
     dateContainer:{
+      flexDirection: 'row',
       borderRadius: 5,
       padding: 10,
       marginRight: 50,
       marginBottom: 10,
+    },
+    dateText: {
+      marginRight: 10,
+      fontSize: 16,
     }
   });

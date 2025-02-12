@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/AddEditTasks.js';
 import { useRouter } from 'expo-router';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function AddEditTasks() {
     const [tasks, setTasks] = useState([]);
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
+    const [dueDate, setDueDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
     const [editingTaskId, setEditingTaskId] = useState(null);
     const router = useRouter();
 
@@ -44,26 +49,25 @@ export default function AddEditTasks() {
         if (taskTitle.trim() === '') return;
 
         if (editingTaskId) {
-            // Update existing task
             const updatedTasks = tasks.map(task =>
-                task.id === editingTaskId ? { ...task, title: taskTitle, description: taskDescription } : task
+                task.id === editingTaskId ? { ...task, title: taskTitle, description: taskDescription, dueDate } : task
             );
             setTasks(updatedTasks);
             setEditingTaskId(null);
         } else {
-            // Add new task
-            const newTask = { id: Date.now().toString(), title: taskTitle, description: taskDescription };
+            const newTask = { id: Date.now().toString(), title: taskTitle, description: taskDescription, dueDate };
             setTasks([...tasks, newTask]);
         }
 
         setTaskTitle('');
         setTaskDescription('');
+        setDueDate(new Date());
     };
 
-    // Edit Task
     const editTask = (task) => {
         setTaskTitle(task.title);
         setTaskDescription(task.description);
+        setDueDate(new Date(task.dueDate));
         setEditingTaskId(task.id);
     };
 
@@ -81,6 +85,10 @@ export default function AddEditTasks() {
         ]);
     };
 
+    const formatDate = (date) => {
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Task List</Text>
@@ -95,13 +103,45 @@ export default function AddEditTasks() {
                     multiline
                 />
                 <TextInput
-                    style={[styles.input, { height: 80 }]}
+                    style={styles.inputDescription}
                     placeholder="Task Description"
                     value={taskDescription}
                     onChangeText={setTaskDescription}
                     multiline
                 />
-                <Text style={styles.dateContainer}>Due date:</Text>
+                <TouchableOpacity onPress={() => setShowDatePicker(true) } style={styles.dateContainer}>
+                    <Text style={styles.dateText}>Due: {formatDate(dueDate)}</Text>
+                    <Ionicons name="calendar" size={24} color="black" />
+                </TouchableOpacity>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={dueDate}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            setShowDatePicker(false);
+                            if (selectedDate) {
+                                setDueDate(selectedDate);
+                                setShowTimePicker(true);
+                            }
+                        }}
+                    />
+                )}
+
+                {showTimePicker && (
+                    <DateTimePicker
+                        value={dueDate}
+                        mode="time"
+                        display="default"
+                        onChange={(event, selectedTime) => {
+                            setShowTimePicker(false);
+                            if (selectedTime) {
+                                setDueDate(selectedTime);
+                            }
+                        }}
+                    />
+                )}
                 <View style={styles.buttonContainer}>
                     <Button title={editingTaskId ? "Update Task" : "Add Task"} onPress={handleSaveTask} />
                 </View>
@@ -115,11 +155,12 @@ export default function AddEditTasks() {
                     <TouchableOpacity onPress={() =>
                         router.push({
                             pathname: '/Screens/TaskDetails',
-                            params: { title: item.title, description: item.description || '' },
+                            params: { title: item.title, description: item.description || '', dueDate: item.dueDate || '' },
                         })
                     }>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.title}</Text>
+                            <Text style={styles.taskDate}>Due: {formatDate(new Date(item.dueDate))}</Text>
                             <View style={styles.buttonGroup}>
                                 <TouchableOpacity onPress={() => editTask(item)}>
                                     <MaterialIcons name="edit" size={24} color="blue" />
