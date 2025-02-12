@@ -31,8 +31,8 @@ export const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column',
+      alignItems: 'stretch',
       marginTop: 20,
       marginBottom: 20,
     },
@@ -41,12 +41,21 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-between',
     },
+    buttonContainer:{
+      alignSelf: 'center',
+    },
     input: {
-      flex: 1,
       borderWidth: 1,
       borderColor: '#ddd',
       borderRadius: 5,
       padding: 10,
       marginRight: 10,
+      marginBottom: 10,
     },
+    dateContainer:{
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 50,
+      marginBottom: 10,
+    }
   });

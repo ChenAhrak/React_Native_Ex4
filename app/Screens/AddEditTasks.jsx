@@ -101,7 +101,10 @@ export default function AddEditTasks() {
                     onChangeText={setTaskDescription}
                     multiline
                 />
-                <Button title={editingTaskId ? "Update Task" : "Add Task"} onPress={handleSaveTask} />
+                <Text style={styles.dateContainer}>Due date:</Text>
+                <View style={styles.buttonContainer}>
+                    <Button title={editingTaskId ? "Update Task" : "Add Task"} onPress={handleSaveTask} />
+                </View>
             </View>
 
             {/* רשימת המשימות מוצגת מתחת */}
