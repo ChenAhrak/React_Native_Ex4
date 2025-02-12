@@ -35,6 +35,11 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 20,
     },
+    buttonGroup:{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
     input: {
       flex: 1,
       borderWidth: 1,
