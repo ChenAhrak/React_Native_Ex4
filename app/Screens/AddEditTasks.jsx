@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Alert, Platform,Keyboard,TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../Styles/AddEditTasks.js';
 import { useRouter } from 'expo-router';
@@ -111,6 +111,7 @@ export default function AddEditTasks() {
     };
 
     return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
             <Text style={styles.header}>Add / Edit Tasks</Text>
 
@@ -199,5 +200,7 @@ export default function AddEditTasks() {
                 }}
             />
         </View>
+    </TouchableWithoutFeedback>
     );
+    
 }

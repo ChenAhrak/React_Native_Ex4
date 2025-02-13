@@ -100,6 +100,7 @@ export default function TaskList() {
     };
 
     return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
             style={[styles.container, { flex: 1 }]}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -208,5 +209,6 @@ export default function TaskList() {
             />
 
         </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
     );
 }
