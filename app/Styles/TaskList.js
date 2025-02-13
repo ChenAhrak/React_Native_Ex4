@@ -22,6 +22,7 @@ export const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 5,
       elevation: 2,
+      alignItems: 'center',
     },
     taskText: {
       fontSize: 16,
@@ -69,19 +70,9 @@ export const styles = StyleSheet.create({
       marginRight: 10,
       fontSize: 16,
     },
-    // Add these to your existing styles
-// taskItem: {
-//   // ... your existing styles ...
-//   flexDirection: 'row',
-//   alignItems: 'center',
-// },
 checkbox: {
   padding: 10,
 },
-// taskContent: {
-//   flex: 1,
-//   padding: 10,
-// },
 completedTaskText: {
   textDecorationLine: 'line-through',
   color: '#888',
